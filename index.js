@@ -18,6 +18,23 @@ router.get('/home', function(req, res)
 res.render('home');
   });
 });
+router.post('/edit',function(req,res){
+  var x=req.body.y;
+  form.find({"_id":x},function(err,docs){
+    res.send(docs);
+  });
+});
+router.post('/update',function(req,res){
+  var data={
+    firstName:req.body.firstName,
+    lastName:req.body.lastName,
+     email : req.body.email,
+  telephone : req.body.telephone
+  }
+  form.update({"_id":req.body.id},{$set:data},function(err,docs){
+    res.redirect('/home');
+  });
+});
 //Form
 router.post('/form', function(req,res){
   var data = {
