@@ -5,6 +5,7 @@ var moment=require('moment');
 var nodemailer=require('nodemailer');
 var randomstring=require('randomstring');
 var multer=require('multer');
+
 // var upload = multer({ dest: 'uploads/' })
 var db=monk('localhost:27017/aditya');
 // console.log('connected');
@@ -18,25 +19,41 @@ var storage = multer.diskStorage({
     cb(null, file.originalname)
   }
 });
- 
 var upload = multer({ storage: storage })
 /* GET home page. */
 router.get('/', function(req, res)
 {
-res.render('index');
+  if(req.session && req.session.user){
+    res.locals.user=req.session.user
+    res.redirect('/home');
+  }
+  else{
+    req.session.reset();
+    res.render('index');
+  }
 });
 router.get('/forgotpassword', function(req, res)
 {
 res.render('forgotpassword');
 });
-
+router.get('/logout',function(req,res){
+  req.session.reset();
+  res.redirect('/');
+});
 router.get('/home', function(req, res)
 {
+   if(req.session && req.session.user){
+    res.locals.user=req.session.user
   form.find({},function(err,docs){
     console.log(docs);
     res.locals.data=docs;
 res.render('home');
   });
+}
+else{
+  // res.session.reset();
+  res.redirect('/');
+}
 });
 router.post('/forgotpwd',function(req,res){
   res.render('forgotpassword');
@@ -71,11 +88,11 @@ transporter.sendMail(mailOptions, function(error, info){
 });
 });
 router.post('/edit',function(req,res){
-  var x=req.body.y;
-  form.find({"_id":x},function(err,docs){
+  var id=req.body.y;
+  form.find({"_id":id},function(err,docs){
     res.send(docs);
   });
-  res.redirect('/');
+  // res.redirect('/');
 });
 router.post('/update',function(req,res){
   var data={
@@ -168,6 +185,8 @@ router.post('/login',function (req,res) {
 
     }
     else if(docs){
+      delete docs.password;
+      req.session.user=docs;
       console.log("valid");
       res.redirect('/home');
     }
@@ -175,7 +194,5 @@ router.post('/login',function (req,res) {
       console.log("error");
     }
   });
-});
-
-
+});  
 module.exports = router;
