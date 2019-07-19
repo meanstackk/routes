@@ -67,13 +67,13 @@ router.post('/forgotpwd',function(req,ress){
    var transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'ashavelisetti@gmail.com',
-    pass: 'madhavi22399',
+    user: 'chandanavelisetti@gmail.com',
+    pass: 'kesava22399',
   }
 });
 
 var mailOptions = {
-  from: 'ashavelisetti@gmail.com',
+  from: 'chandanavelisetti@gmail.com',
   to: req.body.id,
   subject: 'thanks 4 registration',
   html:msg,
